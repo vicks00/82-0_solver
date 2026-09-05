@@ -1,0 +1,63 @@
+{
+  "anomalies": [
+    {
+      "era": "1960s",
+      "id": "frank_radovich_gsw_1960s",
+      "issue": "missing_positions",
+      "player": "Frank Radovich",
+      "positions": [],
+      "team": "GSW"
+    },
+    {
+      "era": "1960s",
+      "id": "tom_workman_was_1960s",
+      "issue": "missing_positions",
+      "player": "Tom Workman",
+      "positions": [],
+      "team": "WAS"
+    },
+    {
+      "era": "1970s",
+      "id": "moe_barr_sac_1970s",
+      "issue": "missing_positions",
+      "player": "Moe Barr",
+      "positions": [],
+      "team": "SAC"
+    },
+    {
+      "era": "1970s",
+      "id": "gary_suiter_cle_1970s",
+      "issue": "missing_positions",
+      "player": "Gary Suiter",
+      "positions": [],
+      "team": "CLE"
+    },
+    {
+      "era": "1970s",
+      "id": "ralph_ogden_gsw_1970s",
+      "issue": "missing_positions",
+      "player": "Ralph Ogden",
+      "positions": [],
+      "team": "GSW"
+    }
+  ],
+  "anomaly_count": 5,
+  "board_count": 180,
+  "cache_status": "hit",
+  "era_count": 7,
+  "imported_at": "2026-08-23T23:43:00.343961+00:00",
+  "missing_blk_count": 759,
+  "missing_stl_count": 759,
+  "playable_count": 10621,
+  "row_count": 10626,
+  "schema_version": 1,
+  "source": {
+    "dataset": "https://www.82-0.com/players_flat.json",
+    "generated_at": "2026-08-16T18:37:59.930Z",
+    "guide_url": "https://82-0-guide.com/data/rankings.json",
+    "sha256": "8de4904d4670ec877b9b271fbe0e5d5f798b46940b8f35f4e9acd02f09c19dd0",
+    "source_note": "Unofficial fan analysis. Not affiliated with 82-0.com or the NBA."
+  },
+  "team_count": 30,
+  "unique_key_count": 10626
+}

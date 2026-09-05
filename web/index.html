@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Persistent browser control panel for 82-0 speedrun decisions."
+    >
+    <title>82-0 Speedrun Control</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Persistent decision engine</p>
+          <h1><span>82</span>–0 Speedrun Control</h1>
+        </div>
+        <div class="topbar-actions">
+          <span class="save-status" id="save-status">Loading state…</span>
+          <button class="button button-danger button-small" id="end-run" hidden>
+            End run
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="run-strip" id="run-strip">
+          <div class="run-identity">
+            <span class="status-dot"></span>
+            <div>
+              <span class="label">Run status</span>
+              <strong id="run-status">No active run</strong>
+            </div>
+          </div>
+          <div class="strip-stat">
+            <span class="label">Current spin</span>
+            <strong id="current-spin">—</strong>
+          </div>
+          <div class="strip-stat">
+            <span class="label">Roster</span>
+            <strong id="roster-count">0 / 5</strong>
+          </div>
+          <div class="strip-stat timer-stat">
+            <span class="label">Time to 82-0</span>
+            <strong id="run-timer">00:00.0</strong>
+            <div class="timer-actions">
+              <button id="clock-toggle" type="button">Start clock</button>
+              <button id="reset-clock" type="button">Reset</button>
+              <button id="disable-clock" type="button">Turn off</button>
+            </div>
+          </div>
+          <div class="reroll-counters">
+            <span class="reroll-pill" id="team-reroll-count">TEAM · —</span>
+            <span class="reroll-pill" id="era-reroll-count">ERA · —</span>
+          </div>
+        </section>
+
+        <section class="chance-panel" id="chance-panel">
+          <div class="chance-primary">
+            <div>
+              <p class="eyebrow">Current-run chance</p>
+              <strong class="chance-number" id="chance-number">—</strong>
+            </div>
+            <span class="health-badge" id="chance-health">Calculating</span>
+          </div>
+          <div class="chance-context">
+            <strong id="chance-direction">No prior roll</strong>
+            <span id="chance-explanation">
+              Probability updates after every roll, reroll, and pick.
+            </span>
+            <div class="health-track">
+              <span id="health-fill"></span>
+              <i id="health-threshold"></i>
+            </div>
+            <div class="projected-chance" id="projected-chance" hidden>
+              <span id="projected-label">If recommended action is taken</span>
+              <strong id="projected-number">—</strong>
+              <em id="projected-delta">—</em>
+            </div>
+          </div>
+          <div class="chance-history">
+            <span class="label">Chance trend</span>
+            <svg
+              id="chance-chart"
+              viewBox="0 0 220 64"
+              preserveAspectRatio="none"
+              role="img"
+              aria-label="Recent estimated 82-0 probability"
+            ></svg>
+          </div>
+        </section>
+
+        <section class="recommendation" id="recommendation">
+          <div>
+            <p class="eyebrow">Recommended action</p>
+            <h2 id="decision">Start a new run</h2>
+            <p id="decision-detail">
+              Enter the team and era shown by the game.
+            </p>
+          </div>
+          <div class="recommendation-action" id="recommendation-action"></div>
+        </section>
+
+        <section class="action-comparison" id="action-comparison" hidden>
+          <div class="action-comparison-heading">
+            <div>
+              <p class="eyebrow">Current-spin speedrun EV</p>
+              <h3>Every legal action, same future scenarios</h3>
+            </div>
+            <span id="action-confidence">Calculating confidence…</span>
+          </div>
+          <div class="action-values" id="action-values"></div>
+        </section>
+
+        <div class="layout">
+          <div class="primary-column">
+            <section class="panel control-panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">Spin input</p>
+                  <h3 id="spin-form-title">Start run</h3>
+                </div>
+                <span class="step-chip" id="step-chip">Step 1</span>
+              </div>
+
+              <form id="spin-form" class="spin-form">
+                <label>
+                  <span>Team</span>
+                  <input
+                    id="team-input"
+                    list="team-options"
+                    autocomplete="off"
+                    placeholder="Type or select, e.g. MIA"
+                    required
+                  >
+                  <datalist id="team-options"></datalist>
+                </label>
+                <label>
+                  <span>Era</span>
+                  <input
+                    id="era-input"
+                    list="era-options"
+                    autocomplete="off"
+                    placeholder="Type or select, e.g. 2000s"
+                    required
+                  >
+                  <datalist id="era-options"></datalist>
+                </label>
+                <button class="button button-primary" id="spin-submit" type="submit">
+                  Evaluate opening spin
+                </button>
+              </form>
+
+              <div class="reroll-controls" id="reroll-controls" hidden>
+                <div class="reroll-control" id="team-reroll-control">
+                  <div>
+                    <span class="label">Keep era, change team</span>
+                    <strong>TEAM REROLL</strong>
+                  </div>
+                  <div class="reroll-input">
+                    <input
+                      id="team-reroll-input"
+                      list="team-reroll-options"
+                      autocomplete="off"
+                      placeholder="New team"
+                    >
+                    <datalist id="team-reroll-options"></datalist>
+                    <button class="button button-secondary" id="team-reroll" type="button">
+                      Use TEAM
+                    </button>
+                  </div>
+                </div>
+                <div class="reroll-control" id="era-reroll-control">
+                  <div>
+                    <span class="label">Keep team, change era</span>
+                    <strong>ERA REROLL</strong>
+                  </div>
+                  <div class="reroll-input">
+                    <input
+                      id="era-reroll-input"
+                      list="era-reroll-options"
+                      autocomplete="off"
+                      placeholder="New era"
+                    >
+                    <datalist id="era-reroll-options"></datalist>
+                    <button class="button button-secondary" id="era-reroll" type="button">
+                      Use ERA
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel" id="board-panel" hidden>
+              <div class="panel-heading board-heading">
+                <div>
+                  <p class="eyebrow">Board report</p>
+                  <h3 id="board-title">—</h3>
+                </div>
+                <div class="quality-score">
+                  <span class="label">Best legal path value</span>
+                  <strong id="board-quality">—</strong>
+                </div>
+              </div>
+
+              <div class="metric-grid">
+                <div class="metric">
+                  <span>Best legal composite</span>
+                  <strong id="metric-best">—</strong>
+                </div>
+                <div class="metric">
+                  <span>Best legal player</span>
+                  <strong id="metric-average">—</strong>
+                </div>
+                <div class="metric">
+                  <span>Position after pick</span>
+                  <strong id="metric-p90">—</strong>
+                </div>
+                <div class="metric">
+                  <span>Open after pick</span>
+                  <strong id="metric-p18">—</strong>
+                </div>
+              </div>
+
+              <div class="reroll-comparison">
+                <div>
+                  <span>Current board</span>
+                  <strong id="quality-current">—</strong>
+                  <small>baseline</small>
+                </div>
+                <div id="team-expectation">
+                  <span>Expected best TEAM result</span>
+                  <strong id="quality-team">—</strong>
+                  <small id="quality-team-edge">—</small>
+                </div>
+                <div id="era-expectation">
+                  <span>Expected best ERA result</span>
+                  <strong id="quality-era">—</strong>
+                  <small id="quality-era-edge">—</small>
+                </div>
+              </div>
+              <div class="reroll-outcomes" id="reroll-outcomes"></div>
+              <div class="replacement-outlook">
+                <div>
+                  <span class="label">Empirical replacement outlook</span>
+                  <p>Average best card on database-qualified future boards</p>
+                </div>
+                <div class="replacement-values" id="replacement-values"></div>
+              </div>
+            </section>
+
+            <section class="panel" id="players-panel" hidden>
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">Every card on this board</p>
+                  <h3>Composite player report</h3>
+                </div>
+                <span class="result-count" id="result-count"></span>
+              </div>
+              <div class="table-tools">
+                <input
+                  id="player-search"
+                  type="search"
+                  placeholder="Search player or position…"
+                >
+                <select id="position-filter" aria-label="Filter by position">
+                  <option value="">All positions</option>
+                  <option value="PG">PG</option>
+                  <option value="SG">SG</option>
+                  <option value="SF">SF</option>
+                  <option value="PF">PF</option>
+                  <option value="C">C</option>
+                </select>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Rank</th>
+                      <th>Player</th>
+                      <th>Eligible</th>
+                      <th>Composite</th>
+                      <th>Projected final</th>
+                      <th>PTS</th>
+                      <th>REB</th>
+                      <th>AST</th>
+                      <th>STL</th>
+                      <th>BLK</th>
+                      <th>Fit</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="player-rows"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+
+          <aside class="side-column">
+            <section class="panel roster-panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">Persistent run state</p>
+                  <h3>Your roster</h3>
+                </div>
+                <span class="saved-badge">Saved</span>
+              </div>
+              <div class="score-progress" id="score-progress">
+                <div>
+                  <span id="score-label">Adjusted contribution</span>
+                  <strong id="committed-score">0.00</strong>
+                </div>
+                <div>
+                  <span id="remaining-label">Approx. still needed</span>
+                  <strong id="remaining-score">109.50</strong>
+                </div>
+                <small id="score-note">
+                  Final value can change when historical STL/BLK are imputed.
+                </small>
+              </div>
+              <div class="roster" id="roster"></div>
+            </section>
+
+            <section class="panel history-panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">Audit trail</p>
+                  <h3>Run history</h3>
+                </div>
+              </div>
+              <ol id="history"></ol>
+            </section>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="celebration" id="celebration" hidden>
+      <div class="confetti" id="confetti"></div>
+      <div class="celebration-card">
+        <p>Speedrun complete</p>
+        <strong>82–0</strong>
+        <span id="celebration-detail">You did it.</span>
+        <button class="button button-take" id="close-celebration" type="button">
+          LET'S GO
+        </button>
+      </div>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>

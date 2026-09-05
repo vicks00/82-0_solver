@@ -1,0 +1,24 @@
+{
+  "roster": [
+    {
+      "id": "lebron_james_lal_2010s"
+    },
+    {
+      "id": "kevin_durant_gsw_2010s"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "oscar_robertson_sac_1960s"
+    },
+    {
+      "id": "jerry_lucas_sac_1960s"
+    }
+  ],
+  "current_team": "SAC",
+  "current_era": "1960s",
+  "team_rerolls": 1,
+  "era_rerolls": 1,
+  "abort_below_probability": 0.18,
+  "preserve_rerolls_above_probability": 0.62
+}

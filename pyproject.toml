@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "82-0-speedrun-solver"
+version = "0.1.0"
+description = "A data-backed decision engine for 82-0 speedruns"
+requires-python = ">=3.10"
+dependencies = ["requests>=2.32"]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+
+[project.scripts]
+82-0-import-cards = "scripts.import_cards:main"
+82-0-app = "scripts.run_app:main"
+
+[tool.setuptools.packages.find]
+include = ["speedrun_solver*", "scripts*"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
