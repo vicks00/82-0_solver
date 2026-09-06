@@ -179,6 +179,38 @@ function fillOptions(target, values) {
     .join("");
 }
 
+function renderRerollChoices(target, values, selected, disabled) {
+  const key = `${values.join("\0")}|${disabled ? "1" : "0"}`;
+  if (target.dataset.key !== key) {
+    target.dataset.key = key;
+    target.innerHTML = values.length
+      ? values
+          .map(
+            (value) => `
+              <button
+                class="reroll-choice"
+                type="button"
+                role="option"
+                data-choice="${escapeHtml(value)}"
+                ${disabled ? "disabled" : ""}
+              >${escapeHtml(value)}</button>`,
+          )
+          .join("")
+      : `<span class="reroll-empty">No legal destinations</span>`;
+  }
+  const needle = selected.trim().toLowerCase();
+  const exact = values.some((value) => value.toLowerCase() === needle);
+  target.querySelectorAll(".reroll-choice").forEach((button) => {
+    const value = button.dataset.choice;
+    const isSelected = value.toLowerCase() === needle;
+    const match = exact || !needle || value.toLowerCase().includes(needle);
+    button.classList.toggle("selected", isSelected);
+    button.classList.toggle("filtered-out", !match);
+    button.setAttribute("aria-selected", String(isSelected));
+    button.disabled = disabled;
+  });
+}
+
 function render() {
   const { session, roster, report, history } = app.state;
   ui.runStrip.classList.toggle("active", session.active);
@@ -271,12 +303,22 @@ function renderSpinControls(session, report) {
         (board) => board.team === session.current_team && board.era === era,
       ),
   );
-  fillOptions(ui.teamRerollOptions, otherTeams);
-  fillOptions(ui.eraRerollOptions, otherEras);
   ui.teamReroll.disabled = session.team_rerolls <= 0;
   ui.teamRerollInput.disabled = session.team_rerolls <= 0;
   ui.eraReroll.disabled = session.era_rerolls <= 0;
   ui.eraRerollInput.disabled = session.era_rerolls <= 0;
+  renderRerollChoices(
+    ui.teamRerollOptions,
+    otherTeams,
+    ui.teamRerollInput.value,
+    session.team_rerolls <= 0,
+  );
+  renderRerollChoices(
+    ui.eraRerollOptions,
+    otherEras,
+    ui.eraRerollInput.value,
+    session.era_rerolls <= 0,
+  );
   ui.teamReroll.textContent =
     session.team_rerolls > 0 ? `Use TEAM (${session.team_rerolls})` : "TEAM used";
   ui.eraReroll.textContent =
@@ -909,6 +951,25 @@ async function refreshState() {
   }
 }
 
+function syncRerollFilter(input, options) {
+  const values = [...options.querySelectorAll(".reroll-choice")].map(
+    (button) => button.dataset.choice,
+  );
+  renderRerollChoices(options, values, input.value, input.disabled);
+}
+
+function bindRerollPicker(input, options) {
+  input.addEventListener("input", () => syncRerollFilter(input, options));
+  options.addEventListener("click", (event) => {
+    const choice = event.target.closest("[data-choice]");
+    if (!choice || choice.disabled) return;
+    input.value = choice.dataset.choice;
+    syncRerollFilter(input, options);
+  });
+}
+
+bindRerollPicker(ui.teamRerollInput, ui.teamRerollOptions);
+bindRerollPicker(ui.eraRerollInput, ui.eraRerollOptions);
 initialize();
 setInterval(updateTimer, 100);
 setInterval(refreshState, 1200);

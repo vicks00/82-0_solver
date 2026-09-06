@@ -60,7 +60,6 @@ input:disabled {
 .panel-heading,
 .recommendation,
 .spin-form,
-.reroll-control,
 .table-tools {
   display: flex;
   align-items: center;
@@ -735,9 +734,16 @@ select:focus {
 }
 
 .reroll-control {
+  display: grid;
+  gap: 12px;
+  padding: 15px 22px;
+}
+
+.reroll-heading {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 15px 22px;
 }
 
 .reroll-control + .reroll-control {
@@ -755,13 +761,49 @@ select:focus {
   font-size: 0.82rem;
 }
 
-.reroll-input {
-  display: flex;
-  gap: 8px;
+.reroll-picker {
+  display: grid;
+  gap: 10px;
 }
 
-.reroll-input input {
-  width: 150px;
+.reroll-picker input {
+  width: min(220px, 100%);
+}
+
+.reroll-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.reroll-choice {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #0e1214;
+  color: var(--text);
+  font-size: 0.74rem;
+  font-weight: 750;
+}
+
+.reroll-choice:hover:not(:disabled) {
+  border-color: #465159;
+}
+
+.reroll-choice.selected {
+  border-color: rgba(255, 107, 44, 0.55);
+  background: var(--orange-soft);
+  color: var(--orange);
+}
+
+.reroll-choice.filtered-out {
+  display: none;
+}
+
+.reroll-empty {
+  color: var(--muted);
+  font-size: 0.78rem;
 }
 
 .board-heading {
@@ -1398,8 +1440,7 @@ tbody tr.recommended-player {
 
   .topbar,
   .recommendation,
-  .spin-form,
-  .reroll-control {
+  .spin-form {
     align-items: stretch;
     flex-direction: column;
   }
@@ -1458,7 +1499,12 @@ tbody tr.recommended-player {
     align-items: stretch;
   }
 
-  .reroll-input input {
+  .reroll-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .reroll-picker input {
     width: 100%;
   }
 

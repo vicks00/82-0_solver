@@ -8,7 +8,7 @@
       content="Persistent browser control panel for 82-0 speedrun decisions."
     >
     <title>82-0 Speedrun Control</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/styles.css?v=reroll-picks">
   </head>
   <body>
     <div class="app-shell">
@@ -155,39 +155,51 @@
 
               <div class="reroll-controls" id="reroll-controls" hidden>
                 <div class="reroll-control" id="team-reroll-control">
-                  <div>
-                    <span class="label">Keep era, change team</span>
-                    <strong>TEAM REROLL</strong>
-                  </div>
-                  <div class="reroll-input">
-                    <input
-                      id="team-reroll-input"
-                      list="team-reroll-options"
-                      autocomplete="off"
-                      placeholder="New team"
-                    >
-                    <datalist id="team-reroll-options"></datalist>
+                  <div class="reroll-heading">
+                    <div>
+                      <span class="label">Keep era, change team</span>
+                      <strong>TEAM REROLL</strong>
+                    </div>
                     <button class="button button-secondary" id="team-reroll" type="button">
                       Use TEAM
                     </button>
                   </div>
+                  <div class="reroll-picker">
+                    <input
+                      id="team-reroll-input"
+                      autocomplete="off"
+                      placeholder="Filter or type a team"
+                    >
+                    <div
+                      id="team-reroll-options"
+                      class="reroll-choices"
+                      role="listbox"
+                      aria-label="Legal team destinations"
+                    ></div>
+                  </div>
                 </div>
                 <div class="reroll-control" id="era-reroll-control">
-                  <div>
-                    <span class="label">Keep team, change era</span>
-                    <strong>ERA REROLL</strong>
-                  </div>
-                  <div class="reroll-input">
-                    <input
-                      id="era-reroll-input"
-                      list="era-reroll-options"
-                      autocomplete="off"
-                      placeholder="New era"
-                    >
-                    <datalist id="era-reroll-options"></datalist>
+                  <div class="reroll-heading">
+                    <div>
+                      <span class="label">Keep team, change era</span>
+                      <strong>ERA REROLL</strong>
+                    </div>
                     <button class="button button-secondary" id="era-reroll" type="button">
                       Use ERA
                     </button>
+                  </div>
+                  <div class="reroll-picker">
+                    <input
+                      id="era-reroll-input"
+                      autocomplete="off"
+                      placeholder="Filter or type an era"
+                    >
+                    <div
+                      id="era-reroll-options"
+                      class="reroll-choices"
+                      role="listbox"
+                      aria-label="Legal era destinations"
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -349,6 +361,6 @@
         </button>
       </div>
     </div>
-    <script src="/app.js"></script>
+    <script src="/app.js?v=reroll-picks"></script>
   </body>
 </html>
